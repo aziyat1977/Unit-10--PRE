@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RefreshCw, ArrowRight, Video, PenTool, User, MessageSquare, Globe, Check, X, Eye, EyeOff, Mic, Ear, Brain } from 'lucide-react';
+import { RefreshCw, ArrowRight, Video, PenTool, User, MessageSquare, Globe, Check, X, Eye, EyeOff, Mic, Ear, Brain, FlaskConical } from 'lucide-react';
 
 // --- SHARED DATA ---
 
@@ -127,6 +127,84 @@ export const PASSIVE_TENSE_DATA = [
 ];
 
 // --- COMPONENTS ---
+
+export const SupertasterQuiz = () => {
+    const [answers, setAnswers] = useState<Record<number, boolean>>({});
+    const [showResult, setShowResult] = useState(false);
+
+    const questions = [
+        "Is black coffee too bitter for you?",
+        "Do you hate dark chocolate?",
+        "Are you very sensitive to spicy chili?",
+        "Do you dislike grapefruit juice?",
+        "Do you find raw broccoli too strong?",
+        "Do you often find food 'too salty'?"
+    ];
+
+    const toggleAnswer = (idx: number) => {
+        setAnswers(prev => ({ ...prev, [idx]: !prev[idx] }));
+        setShowResult(false);
+    };
+
+    const getResult = () => {
+        const score = Object.values(answers).filter(Boolean).length;
+        if (score >= 4) return { type: "Supertaster", color: "text-red-500", desc: "You have more taste buds than average! Flavors are very intense for you." };
+        if (score >= 2) return { type: "Medium Taster", color: "text-blue-500", desc: "You are like most people. You enjoy a balance of flavors." };
+        return { type: "Non-taster", color: "text-gray-500", desc: "You might prefer spicy and salty food because other flavors seem weak." };
+    };
+
+    return (
+        <div className="w-full max-w-4xl mx-auto bg-white dark:bg-neutral-800 p-8 rounded-3xl shadow-2xl border border-gray-100 dark:border-neutral-700">
+            <div className="text-center mb-8">
+                <div className="inline-block p-4 bg-purple-100 dark:bg-purple-900/30 rounded-full text-purple-600 dark:text-purple-300 mb-4">
+                    <FlaskConical size={32} />
+                </div>
+                <h2 className="text-3xl font-black text-gray-900 dark:text-white">Are you a Supertaster?</h2>
+                <p className="text-gray-500 dark:text-gray-400">Check the boxes that are true for you.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                {questions.map((q, i) => (
+                    <motion.button
+                        key={i}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => toggleAnswer(i)}
+                        className={`p-4 rounded-xl text-left flex items-center gap-4 transition-all border-2 ${answers[i] ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20' : 'border-transparent bg-gray-50 dark:bg-neutral-900 hover:bg-gray-100'}`}
+                    >
+                        <div className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${answers[i] ? 'bg-purple-500 border-purple-500 text-white' : 'border-gray-300 dark:border-gray-600'}`}>
+                            {answers[i] && <Check size={14} strokeWidth={4} />}
+                        </div>
+                        <span className={`font-medium ${answers[i] ? 'text-purple-900 dark:text-purple-100' : 'text-gray-700 dark:text-gray-300'}`}>{q}</span>
+                    </motion.button>
+                ))}
+            </div>
+
+            <div className="text-center">
+                {!showResult ? (
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => setShowResult(true)}
+                        className="px-8 py-3 bg-gray-900 dark:bg-white text-white dark:text-black font-bold rounded-full text-lg shadow-lg"
+                    >
+                        Reveal My Type
+                    </motion.button>
+                ) : (
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-gray-50 dark:bg-neutral-900 p-6 rounded-2xl border border-gray-200 dark:border-neutral-700"
+                    >
+                        <div className="text-sm font-bold uppercase tracking-widest text-gray-400 mb-2">Result</div>
+                        <div className={`text-4xl font-black mb-2 ${getResult().color}`}>{getResult().type}</div>
+                        <p className="text-gray-600 dark:text-gray-300">{getResult().desc}</p>
+                        <button onClick={() => { setShowResult(false); setAnswers({}); }} className="mt-4 text-sm text-gray-400 underline hover:text-gray-900 dark:hover:text-white">Reset</button>
+                    </motion.div>
+                )}
+            </div>
+        </div>
+    );
+};
 
 export const TongueMap = () => {
   return (
@@ -539,318 +617,4 @@ export const ReferenceWordsGuide = () => {
                   uz: "Men yashil ko'ylakni xohlamayman. Men qizilini xohlayman."
               },
               {
-                  ex: "Small cakes are better than big <span class='bg-teal-100 dark:bg-teal-900 text-teal-800 dark:text-teal-200 px-1 rounded font-bold'>ones</span>.",
-                  ru: "Маленькие торты лучше больших.",
-                  uz: "Kichik tortlar kattalaridan yaxshiroq."
-              }
-          ]
-      }
-  ];
-
-  return (
-    <div className="w-full max-w-5xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-            <h3 className="text-3xl font-bold text-teal-600 dark:text-teal-400">Reference Words Guide</h3>
-            <div className="flex gap-2">
-                <button 
-                onClick={() => setShowRU(!showRU)} 
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold border transition-colors shadow-sm ${showRU ? 'bg-blue-100 text-blue-700 border-blue-300' : 'bg-white dark:bg-neutral-800 text-gray-500 border-gray-300 dark:border-neutral-600'}`}
-                >
-                    <Globe size={16}/> RU
-                </button>
-                <button 
-                onClick={() => setShowUZ(!showUZ)} 
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-bold border transition-colors shadow-sm ${showUZ ? 'bg-green-100 text-green-700 border-green-300' : 'bg-white dark:bg-neutral-800 text-gray-500 border-gray-300 dark:border-neutral-600'}`}
-                >
-                    <Globe size={16}/> UZ
-                </button>
-            </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {data.map((cat, i) => (
-                <motion.div 
-                    key={i}
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: i * 0.2 }}
-                    className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-neutral-700 flex flex-col"
-                >
-                    <div className="bg-teal-50 dark:bg-teal-900/30 p-4 border-b border-teal-100 dark:border-teal-800">
-                        <div className="text-xs font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400 mb-1">{cat.category}</div>
-                        <div className="text-xl font-black text-gray-800 dark:text-white">{cat.words.join(", ")}</div>
-                    </div>
-                    
-                    <div className="p-4 flex-1 flex flex-col gap-4">
-                        {cat.items.map((item, idx) => (
-                            <div key={idx} className="bg-gray-50 dark:bg-neutral-900/50 p-3 rounded-lg border border-gray-100 dark:border-neutral-800">
-                                <p className="text-lg text-gray-800 dark:text-gray-200 mb-2 leading-snug" dangerouslySetInnerHTML={{__html: item.ex}}></p>
-                                <AnimatePresence>
-                                    {(showRU || showUZ) && (
-                                        <motion.div 
-                                            initial={{ opacity: 0, height: 0 }} 
-                                            animate={{ opacity: 1, height: 'auto' }} 
-                                            exit={{ opacity: 0, height: 0 }}
-                                            className="space-y-1 pt-2 border-t border-gray-200 dark:border-neutral-700 mt-2"
-                                        >
-                                            {showRU && <div className="text-sm text-blue-600 font-medium">🇷🇺 {item.ru}</div>}
-                                            {showUZ && <div className="text-sm text-green-600 font-medium">🇺🇿 {item.uz}</div>}
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-                        ))}
-                    </div>
-                </motion.div>
-            ))}
-        </div>
-    </div>
-  );
-};
-
-// --- SINGLE EXAMPLE SLIDE COMPONENT (HUGE FONTS) ---
-
-export const PassiveExampleView = ({ tense, example }: { tense: string, example: any }) => {
-  const [showRU, setShowRU] = useState(false);
-  const [showUZ, setShowUZ] = useState(false);
-
-  return (
-    <div className="flex flex-col items-center justify-center h-full w-full p-8 text-center space-y-12">
-      <div className="absolute top-8 left-8 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-6 py-2 rounded-full font-bold text-xl uppercase tracking-wider">
-        {tense}
-      </div>
-
-      <div className="absolute top-8 right-8 flex gap-3">
-            <button 
-              onClick={() => setShowRU(!showRU)} 
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-lg font-bold border transition-colors shadow-sm ${showRU ? 'bg-blue-100 text-blue-700 border-blue-300' : 'bg-white dark:bg-neutral-800 text-gray-500 border-gray-300 dark:border-neutral-600'}`}
-            >
-                <Globe size={20}/> RU
-            </button>
-            <button 
-              onClick={() => setShowUZ(!showUZ)} 
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-lg font-bold border transition-colors shadow-sm ${showUZ ? 'bg-green-100 text-green-700 border-green-300' : 'bg-white dark:bg-neutral-800 text-gray-500 border-gray-300 dark:border-neutral-600'}`}
-            >
-                <Globe size={20}/> UZ
-            </button>
-      </div>
-
-      <div className="space-y-4 opacity-60">
-        <div className="text-xl uppercase font-bold text-gray-400 tracking-widest">Active Voice</div>
-        <div className="text-4xl md:text-5xl text-gray-600 dark:text-gray-400 font-medium">
-            {example.active}
-        </div>
-      </div>
-
-      <div className="py-8 w-full">
-         <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="space-y-6"
-         >
-             <div className="text-xl uppercase font-bold text-purple-500 tracking-widest">Passive Voice</div>
-             <div 
-                className="text-5xl md:text-7xl lg:text-8xl font-black text-gray-900 dark:text-white leading-tight"
-                dangerouslySetInnerHTML={{ __html: example.passive }}
-             />
-         </motion.div>
-      </div>
-
-      <div className="h-24 flex flex-col items-center justify-center space-y-2">
-         <AnimatePresence>
-            {showRU && (
-                <motion.div 
-                    initial={{ opacity: 0, y: 10 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    exit={{ opacity: 0, y: 10 }}
-                    className="text-2xl md:text-3xl text-blue-600 font-bold"
-                >
-                    {example.ru}
-                </motion.div>
-            )}
-            {showUZ && (
-                <motion.div 
-                    initial={{ opacity: 0, y: 10 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    exit={{ opacity: 0, y: 10 }}
-                    className="text-2xl md:text-3xl text-green-600 font-bold"
-                >
-                    {example.uz}
-                </motion.div>
-            )}
-         </AnimatePresence>
-      </div>
-    </div>
-  );
-};
-
-// --- TABLE COMPONENT (Legacy but using new data source) ---
-
-export const PassiveTenseTable = () => {
-  const [showRU, setShowRU] = useState(false);
-  const [showUZ, setShowUZ] = useState(false);
-
-  return (
-    <div className="w-full max-w-6xl mx-auto bg-white dark:bg-neutral-800 rounded-3xl shadow-xl overflow-hidden border border-gray-200 dark:border-neutral-700">
-      <div className="bg-purple-100 dark:bg-purple-900/30 p-4 flex justify-between items-center border-b border-purple-200 dark:border-purple-800">
-        <h3 className="text-xl font-bold text-purple-700 dark:text-purple-300">Tense Guide</h3>
-        <div className="flex gap-2">
-            <button 
-              onClick={() => setShowRU(!showRU)} 
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-bold border transition-colors ${showRU ? 'bg-blue-100 text-blue-700 border-blue-300' : 'bg-white dark:bg-neutral-700 text-gray-500 border-gray-300 dark:border-neutral-600'}`}
-            >
-                <Globe size={14}/> RU
-            </button>
-            <button 
-              onClick={() => setShowUZ(!showUZ)} 
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-bold border transition-colors ${showUZ ? 'bg-green-100 text-green-700 border-green-300' : 'bg-white dark:bg-neutral-700 text-gray-500 border-gray-300 dark:border-neutral-600'}`}
-            >
-                <Globe size={14}/> UZ
-            </button>
-        </div>
-      </div>
-      
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead className="bg-gray-50 dark:bg-neutral-900 text-gray-500 uppercase text-xs">
-            <tr>
-              <th className="px-6 py-4">Tense</th>
-              <th className="px-6 py-4 text-gray-400">Active Voice (Person Focused)</th>
-              <th className="px-6 py-4 text-purple-600 dark:text-purple-400">Passive Voice (Object Focused)</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-neutral-700 text-sm md:text-base">
-            {PASSIVE_TENSE_DATA.map((t, i) => (
-              <React.Fragment key={i}>
-                <tr className="bg-gray-50/50 dark:bg-neutral-900/30">
-                    <td rowSpan={t.examples.length} className="px-6 py-4 font-bold text-gray-400 dark:text-gray-500 border-r border-gray-100 dark:border-neutral-700 align-top">
-                        {t.label}
-                    </td>
-                    <td className="px-6 py-4 text-gray-600 dark:text-gray-400">{t.examples[0].active}</td>
-                    <td className="px-6 py-4">
-                        <div dangerouslySetInnerHTML={{ __html: t.examples[0].passive }} className="text-gray-900 dark:text-gray-100" />
-                        <AnimatePresence>
-                            {(showRU || showUZ) && (
-                            <motion.div 
-                                initial={{ opacity: 0, height: 0 }} 
-                                animate={{ opacity: 1, height: 'auto' }} 
-                                exit={{ opacity: 0, height: 0 }}
-                                className="mt-1 space-y-1 overflow-hidden"
-                            >
-                                {showRU && <div className="text-xs text-blue-500 font-bold">RU: {t.examples[0].ru}</div>}
-                                {showUZ && <div className="text-xs text-green-600 font-bold">UZ: {t.examples[0].uz}</div>}
-                            </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </td>
-                </tr>
-                {t.examples.slice(1).map((ex, exI) => (
-                    <tr key={`${i}-${exI}`} className="hover:bg-gray-50 dark:hover:bg-neutral-700/50 transition-colors">
-                        <td className="px-6 py-4 text-gray-600 dark:text-gray-400">{ex.active}</td>
-                        <td className="px-6 py-4">
-                            <div dangerouslySetInnerHTML={{ __html: ex.passive }} className="text-gray-900 dark:text-gray-100" />
-                            <AnimatePresence>
-                                {(showRU || showUZ) && (
-                                <motion.div 
-                                    initial={{ opacity: 0, height: 0 }} 
-                                    animate={{ opacity: 1, height: 'auto' }} 
-                                    exit={{ opacity: 0, height: 0 }}
-                                    className="mt-1 space-y-1 overflow-hidden"
-                                >
-                                    {showRU && <div className="text-xs text-blue-500 font-bold">RU: {ex.ru}</div>}
-                                    {showUZ && <div className="text-xs text-green-600 font-bold">UZ: {ex.uz}</div>}
-                                </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </td>
-                    </tr>
-                ))}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
-
-export const PassiveExerciseList = () => {
-    const exercises = [
-        { q: "People drink coffee every day.", a: "Coffee is drunk every day." },
-        { q: "My father built this house.", a: "This house was built by my father." },
-        { q: "They are cleaning the park.", a: "The park is being cleaned." },
-        { q: "Someone has taken my book.", a: "My book has been taken." },
-        { q: "We will invite you.", a: "You will be invited." },
-        { q: "You must follow the rules.", a: "The rules must be followed." },
-        { q: "They were fixing the car.", a: "The car was being fixed." },
-        { q: "Shakespeare wrote Romeo and Juliet.", a: "Romeo and Juliet was written by Shakespeare." },
-        { q: "Do they produce cars here?", a: "Are cars produced here?" },
-        { q: "Did the dog eat the cake?", a: "Was the cake eaten by the dog?" }
-    ];
-
-    const [revealed, setRevealed] = useState<number[]>([]);
-
-    const toggleReveal = (idx: number) => {
-        if (revealed.includes(idx)) {
-            setRevealed(revealed.filter(i => i !== idx));
-        } else {
-            setRevealed([...revealed, idx]);
-        }
-    };
-
-    return (
-        <div className="w-full max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 pb-12">
-            {exercises.map((ex, i) => (
-                <motion.div 
-                    key={i}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                    className="bg-white dark:bg-neutral-800 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-neutral-700 flex flex-col justify-between"
-                >
-                    <div>
-                        <div className="flex justify-between items-start mb-4">
-                            <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 text-xs font-bold px-2 py-1 rounded">
-                                {i + 1}
-                            </span>
-                            <button 
-                                onClick={() => toggleReveal(i)}
-                                className="text-gray-400 hover:text-purple-500 transition-colors p-2 -mr-2"
-                            >
-                                {revealed.includes(i) ? <EyeOff size={20} /> : <Eye size={20} />}
-                            </button>
-                        </div>
-                        <div className="text-gray-700 dark:text-gray-300 mb-4 text-lg font-medium">
-                            {ex.q}
-                        </div>
-                    </div>
-                    
-                    <div className="relative min-h-[2rem]">
-                        <AnimatePresence mode="wait">
-                            {revealed.includes(i) ? (
-                                <motion.div 
-                                    key="ans"
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 10 }}
-                                    className="text-purple-600 dark:text-purple-300 font-bold text-lg"
-                                >
-                                    {ex.a}
-                                </motion.div>
-                            ) : (
-                                <motion.div 
-                                    key="hidden"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    className="h-8 bg-gray-100 dark:bg-neutral-700/50 rounded w-full animate-pulse"
-                                >
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                </motion.div>
-            ))}
-        </div>
-    );
-};
+                  ex: "Small cakes are better than big <span class='bg-teal-100 dark:bg-teal-900 text-teal-800 dark:text-teal-200 px-
