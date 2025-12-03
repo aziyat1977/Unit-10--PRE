@@ -212,24 +212,24 @@ export const VocabMaster = () => {
                                     </div>
                                 </div>
                                 
-                                <div className="flex justify-center gap-6 mt-8">
+                                <div className="flex justify-center gap-4 md:gap-6 mt-8 flex-wrap">
                                     <button 
                                         onClick={prevQ}
-                                        className="p-4 rounded-full bg-gray-100 dark:bg-neutral-700 hover:bg-gray-200 dark:hover:bg-neutral-600 text-gray-800 dark:text-white transition-colors"
+                                        className="px-6 py-3 rounded-full bg-gray-100 dark:bg-neutral-700 hover:bg-gray-200 dark:hover:bg-neutral-600 text-gray-800 dark:text-white transition-colors font-bold flex items-center gap-2"
                                     >
-                                        <ChevronLeft size={32} />
+                                        <ChevronLeft size={20} /> Prev
                                     </button>
                                     <button 
                                         onClick={randomQ}
-                                        className="px-8 py-4 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xl flex items-center gap-3 shadow-lg transition-transform hover:scale-105"
+                                        className="px-8 py-3 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg flex items-center gap-2 shadow-lg transition-transform hover:scale-105"
                                     >
-                                        <RefreshCw size={24} /> Random
+                                        <RefreshCw size={20} /> Random
                                     </button>
                                     <button 
                                         onClick={nextQ}
-                                        className="p-4 rounded-full bg-gray-100 dark:bg-neutral-700 hover:bg-gray-200 dark:hover:bg-neutral-600 text-gray-800 dark:text-white transition-colors"
+                                        className="px-6 py-3 rounded-full bg-gray-100 dark:bg-neutral-700 hover:bg-gray-200 dark:hover:bg-neutral-600 text-gray-800 dark:text-white transition-colors font-bold flex items-center gap-2"
                                     >
-                                        <ChevronRight size={32} />
+                                        Next <ChevronRight size={20} />
                                     </button>
                                 </div>
                             </motion.div>
