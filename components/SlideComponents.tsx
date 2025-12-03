@@ -2,6 +2,132 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RefreshCw, ArrowRight, Video, PenTool, User, MessageSquare, Globe, Check, X, Eye, EyeOff, Mic, Ear, Brain } from 'lucide-react';
 
+// --- SHARED DATA ---
+
+export const PASSIVE_TENSE_DATA = [
+    { 
+      label: "Present Simple", 
+      examples: [
+          {
+            active: "Farmers grow tea.", 
+            passive: "Tea <span class='text-purple-500 font-bold'>is grown</span>.",
+            ru: "Чай выращивают.",
+            uz: "Choy yetishtiriladi."
+          },
+          {
+            active: "People make cars here.", 
+            passive: "Cars <span class='text-purple-500 font-bold'>are made</span> here.",
+            ru: "Здесь делают машины.",
+            uz: "Bu yerda mashinalar ishlab chiqariladi."
+          }
+      ]
+    },
+    { 
+      label: "Past Simple", 
+      examples: [
+          {
+            active: "Bell invented the phone.", 
+            passive: "The phone <span class='text-purple-500 font-bold'>was invented</span>.",
+            ru: "Телефон был изобретен.",
+            uz: "Telefon ixtiro qilingan."
+          },
+          {
+            active: "They built this house.", 
+            passive: "This house <span class='text-purple-500 font-bold'>was built</span>.",
+            ru: "Этот дом был построен.",
+            uz: "Bu uy qurilgan."
+          }
+      ]
+    },
+    { 
+      label: "Present Continuous", 
+      examples: [
+          {
+            active: "They are painting the house.", 
+            passive: "The house <span class='text-purple-500 font-bold'>is being painted</span>.",
+            ru: "Дом красят (сейчас).",
+            uz: "Uy bo'yalmoqda."
+          },
+          {
+            active: "She is cleaning the room.", 
+            passive: "The room <span class='text-purple-500 font-bold'>is being cleaned</span>.",
+            ru: "Комнату убирают (сейчас).",
+            uz: "Xona tozalanmoqda."
+          }
+      ]
+    },
+    { 
+      label: "Past Continuous", 
+      examples: [
+          {
+            active: "She was cooking dinner.", 
+            passive: "Dinner <span class='text-purple-500 font-bold'>was being cooked</span>.",
+            ru: "Ужин готовился.",
+            uz: "Kechki ovqat tayyorlanayotgan edi."
+          },
+          {
+            active: "They were watching TV.", 
+            passive: "TV <span class='text-purple-500 font-bold'>was being watched</span>.",
+            ru: "Телевизор смотрели.",
+            uz: "Televizor ko'rilayotgan edi."
+          }
+      ]
+    },
+    { 
+      label: "Present Perfect", 
+      examples: [
+          {
+            active: "Someone has stolen my car.", 
+            passive: "My car <span class='text-purple-500 font-bold'>has been stolen</span>.",
+            ru: "Мою машину украли.",
+            uz: "Mashinam o'g'irlab ketildi."
+          },
+          {
+            active: "They have finished the work.", 
+            passive: "The work <span class='text-purple-500 font-bold'>has been finished</span>.",
+            ru: "Работа закончена.",
+            uz: "Ish tugatildi."
+          }
+      ]
+    },
+    { 
+      label: "Future Simple", 
+      examples: [
+          {
+            active: "They will build a school.", 
+            passive: "A school <span class='text-purple-500 font-bold'>will be built</span>.",
+            ru: "Школа будет построена.",
+            uz: "Maktab quriladi."
+          },
+          {
+            active: "I will do it tomorrow.", 
+            passive: "It <span class='text-purple-500 font-bold'>will be done</span> tomorrow.",
+            ru: "Это будет сделано завтра.",
+            uz: "Bu ertaga qilinadi."
+          }
+      ]
+    },
+    { 
+      label: "Modals (Can/Must)", 
+      examples: [
+          {
+            active: "You can eat it.", 
+            passive: "It <span class='text-purple-500 font-bold'>can be eaten</span>.",
+            ru: "Это можно съесть.",
+            uz: "Buni yeyish mumkin."
+          },
+          {
+             active: "You must lock the door.", 
+            passive: "The door <span class='text-purple-500 font-bold'>must be locked</span>.",
+            ru: "Дверь должна быть заперта.",
+            uz: "Eshik qulflanishi shart."
+          }
+      ]
+    }
+];
+
+// --- COMPONENTS ---
+
 export const TongueMap = () => {
   return (
     <div className="relative w-64 h-80 mx-auto">
@@ -482,131 +608,87 @@ export const ReferenceWordsGuide = () => {
   );
 };
 
-export const PassiveTenseTable = () => {
+// --- SINGLE EXAMPLE SLIDE COMPONENT (HUGE FONTS) ---
+
+export const PassiveExampleView = ({ tense, example }: { tense: string, example: any }) => {
   const [showRU, setShowRU] = useState(false);
   const [showUZ, setShowUZ] = useState(false);
 
-  const tenses = [
-    { 
-      label: "Present Simple", 
-      examples: [
-          {
-            active: "Farmers grow tea.", 
-            passive: "Tea <span class='text-purple-500 font-bold'>is grown</span>.",
-            ru: "Чай выращивают.",
-            uz: "Choy yetishtiriladi."
-          },
-          {
-            active: "People make cars here.", 
-            passive: "Cars <span class='text-purple-500 font-bold'>are made</span> here.",
-            ru: "Здесь делают машины.",
-            uz: "Bu yerda mashinalar ishlab chiqariladi."
-          }
-      ]
-    },
-    { 
-      label: "Past Simple", 
-      examples: [
-          {
-            active: "Bell invented the phone.", 
-            passive: "The phone <span class='text-purple-500 font-bold'>was invented</span>.",
-            ru: "Телефон был изобретен.",
-            uz: "Telefon ixtiro qilingan."
-          },
-          {
-            active: "They built this house.", 
-            passive: "This house <span class='text-purple-500 font-bold'>was built</span>.",
-            ru: "Этот дом был построен.",
-            uz: "Bu uy qurilgan."
-          }
-      ]
-    },
-    { 
-      label: "Present Continuous", 
-      examples: [
-          {
-            active: "They are painting the house.", 
-            passive: "The house <span class='text-purple-500 font-bold'>is being painted</span>.",
-            ru: "Дом красят (сейчас).",
-            uz: "Uy bo'yalmoqda."
-          },
-          {
-            active: "She is cleaning the room.", 
-            passive: "The room <span class='text-purple-500 font-bold'>is being cleaned</span>.",
-            ru: "Комнату убирают (сейчас).",
-            uz: "Xona tozalanmoqda."
-          }
-      ]
-    },
-    { 
-      label: "Past Continuous", 
-      examples: [
-          {
-            active: "She was cooking dinner.", 
-            passive: "Dinner <span class='text-purple-500 font-bold'>was being cooked</span>.",
-            ru: "Ужин готовился.",
-            uz: "Kechki ovqat tayyorlanayotgan edi."
-          },
-          {
-            active: "They were watching TV.", 
-            passive: "TV <span class='text-purple-500 font-bold'>was being watched</span>.",
-            ru: "Телевизор смотрели.",
-            uz: "Televizor ko'rilayotgan edi."
-          }
-      ]
-    },
-    { 
-      label: "Present Perfect", 
-      examples: [
-          {
-            active: "Someone has stolen my car.", 
-            passive: "My car <span class='text-purple-500 font-bold'>has been stolen</span>.",
-            ru: "Мою машину украли.",
-            uz: "Mashinam o'g'irlab ketildi."
-          },
-          {
-            active: "They have finished the work.", 
-            passive: "The work <span class='text-purple-500 font-bold'>has been finished</span>.",
-            ru: "Работа закончена.",
-            uz: "Ish tugatildi."
-          }
-      ]
-    },
-    { 
-      label: "Future Simple", 
-      examples: [
-          {
-            active: "They will build a school.", 
-            passive: "A school <span class='text-purple-500 font-bold'>will be built</span>.",
-            ru: "Школа будет построена.",
-            uz: "Maktab quriladi."
-          },
-          {
-            active: "I will do it tomorrow.", 
-            passive: "It <span class='text-purple-500 font-bold'>will be done</span> tomorrow.",
-            ru: "Это будет сделано завтра.",
-            uz: "Bu ertaga qilinadi."
-          }
-      ]
-    },
-    { 
-      label: "Modals (Can/Must)", 
-      examples: [
-          {
-            active: "You can eat it.", 
-            passive: "It <span class='text-purple-500 font-bold'>can be eaten</span>.",
-            ru: "Это можно съесть.",
-            uz: "Buni yeyish mumkin."
-          },
-          {
-             active: "You must lock the door.", 
-            passive: "The door <span class='text-purple-500 font-bold'>must be locked</span>.",
-            ru: "Дверь должна быть заперта.",
-            uz: "Eshik qulflanishi shart."
-          }
-      ]
-    }
-  ];
+  return (
+    <div className="flex flex-col items-center justify-center h-full w-full p-8 text-center space-y-12">
+      <div className="absolute top-8 left-8 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 px-6 py-2 rounded-full font-bold text-xl uppercase tracking-wider">
+        {tense}
+      </div>
+
+      <div className="absolute top-8 right-8 flex gap-3">
+            <button 
+              onClick={() => setShowRU(!showRU)} 
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-lg font-bold border transition-colors shadow-sm ${showRU ? 'bg-blue-100 text-blue-700 border-blue-300' : 'bg-white dark:bg-neutral-800 text-gray-500 border-gray-300 dark:border-neutral-600'}`}
+            >
+                <Globe size={20}/> RU
+            </button>
+            <button 
+              onClick={() => setShowUZ(!showUZ)} 
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-lg font-bold border transition-colors shadow-sm ${showUZ ? 'bg-green-100 text-green-700 border-green-300' : 'bg-white dark:bg-neutral-800 text-gray-500 border-gray-300 dark:border-neutral-600'}`}
+            >
+                <Globe size={20}/> UZ
+            </button>
+      </div>
+
+      <div className="space-y-4 opacity-60">
+        <div className="text-xl uppercase font-bold text-gray-400 tracking-widest">Active Voice</div>
+        <div className="text-4xl md:text-5xl text-gray-600 dark:text-gray-400 font-medium">
+            {example.active}
+        </div>
+      </div>
+
+      <div className="py-8 w-full">
+         <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="space-y-6"
+         >
+             <div className="text-xl uppercase font-bold text-purple-500 tracking-widest">Passive Voice</div>
+             <div 
+                className="text-5xl md:text-7xl lg:text-8xl font-black text-gray-900 dark:text-white leading-tight"
+                dangerouslySetInnerHTML={{ __html: example.passive }}
+             />
+         </motion.div>
+      </div>
+
+      <div className="h-24 flex flex-col items-center justify-center space-y-2">
+         <AnimatePresence>
+            {showRU && (
+                <motion.div 
+                    initial={{ opacity: 0, y: 10 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    exit={{ opacity: 0, y: 10 }}
+                    className="text-2xl md:text-3xl text-blue-600 font-bold"
+                >
+                    {example.ru}
+                </motion.div>
+            )}
+            {showUZ && (
+                <motion.div 
+                    initial={{ opacity: 0, y: 10 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    exit={{ opacity: 0, y: 10 }}
+                    className="text-2xl md:text-3xl text-green-600 font-bold"
+                >
+                    {example.uz}
+                </motion.div>
+            )}
+         </AnimatePresence>
+      </div>
+    </div>
+  );
+};
+
+// --- TABLE COMPONENT (Legacy but using new data source) ---
+
+export const PassiveTenseTable = () => {
+  const [showRU, setShowRU] = useState(false);
+  const [showUZ, setShowUZ] = useState(false);
 
   return (
     <div className="w-full max-w-6xl mx-auto bg-white dark:bg-neutral-800 rounded-3xl shadow-xl overflow-hidden border border-gray-200 dark:border-neutral-700">
@@ -638,7 +720,7 @@ export const PassiveTenseTable = () => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-neutral-700 text-sm md:text-base">
-            {tenses.map((t, i) => (
+            {PASSIVE_TENSE_DATA.map((t, i) => (
               <React.Fragment key={i}>
                 <tr className="bg-gray-50/50 dark:bg-neutral-900/30">
                     <td rowSpan={t.examples.length} className="px-6 py-4 font-bold text-gray-400 dark:text-gray-500 border-r border-gray-100 dark:border-neutral-700 align-top">

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Menu, X, Monitor, BookOpen, Sun, Moon, GraduationCap, Brain, Users, Gamepad2 } from 'lucide-react';
 import { LESSONS, QUESTIONS, GAMES, PERSONALITY_TIPS } from './constants';
 import { Roulette } from './components/Roulette';
-import { TongueMap, PassiveActiveToggle, PolitenessScale, WasteChart, TaskCard, FlowChart, GrammarBox, RoleplayCard, PassiveTenseTable, PassiveExerciseList, PassiveMFP, ReferenceWordsGuide } from './components/SlideComponents';
+import { TongueMap, PassiveActiveToggle, PolitenessScale, WasteChart, TaskCard, FlowChart, GrammarBox, RoleplayCard, PassiveTenseTable, PassiveExerciseList, PassiveMFP, ReferenceWordsGuide, PASSIVE_TENSE_DATA, PassiveExampleView } from './components/SlideComponents';
 import { Kahoot } from './components/Kahoot';
 import { VocabMaster } from './components/VocabMaster';
 import { PersonalityHUD } from './components/PersonalityOverlay';
@@ -268,20 +268,22 @@ const getSlidesForLesson = (lessonId: number): SlideData[] => {
              <PassiveMFP />
           </div>
         )
-      },
-      {
-        tag: "Grammar Deep Dive",
-        title: "All Tenses",
-        teacherNotes: ["Highlight how 'BE' changes but 'V3' stays the same", "Use the RU/UZ buttons to check understanding"],
-        component: () => (
-          <div className="min-h-full flex flex-col items-center justify-center bg-gray-50 dark:bg-neutral-900 p-8 transition-colors duration-500">
-             <h2 className="text-3xl font-bold mb-6 text-purple-600 dark:text-purple-400">Passive In Every Tense</h2>
-             <div className="w-full">
-               <PassiveTenseTable />
-             </div>
-          </div>
-        )
-      },
+      }
+     );
+
+    // Insert Expanded Slides for Each Tense Example
+    PASSIVE_TENSE_DATA.forEach((tenseData) => {
+        tenseData.examples.forEach((example, idx) => {
+            commonSlides.push({
+                tag: "Grammar Focus",
+                title: `${tenseData.label} (${idx + 1})`,
+                teacherNotes: ["Highlight the form BE + V3", "Drill pronunciation", `Compare: ${example.active}`],
+                component: () => <div className="min-h-full flex flex-col items-center justify-center bg-gray-50 dark:bg-neutral-900 p-8 transition-colors duration-500"><PassiveExampleView tense={tenseData.label} example={example} /></div>
+            });
+        });
+    });
+
+     commonSlides.push(
       {
         tag: "Practice",
         title: "Passive Practice",
