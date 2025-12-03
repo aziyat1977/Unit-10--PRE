@@ -1,4 +1,4 @@
-import { QuestionBank, LessonConfig, VocabEntry, VocabQuestion } from './types';
+import { QuestionBank, LessonConfig, VocabEntry, VocabQuestion, KahootGame } from './types';
 
 export const LESSONS: LessonConfig[] = [
   { id: 1, title: "10.1 A Question of Taste", color: "text-orange-500", gradient: "from-orange-500 to-red-500", icon: "🍋" },
@@ -72,3 +72,66 @@ export const VOCAB_QUESTIONS: VocabQuestion[] = [
     { q: "Someone who buys things is a **_______**.", a: "Consumer" },
     { q: "Food that is not cooked is **_______**.", a: "Raw" }
 ];
+
+export const KAHOOT_GAME: KahootGame = {
+  title: "Unit 10: Food Review",
+  questions: [
+    {
+      id: 1,
+      text: "Which taste best describes a lemon?",
+      timeLimit: 20,
+      answers: [
+        { text: "Sweet", isCorrect: false, color: "red", shape: "triangle" },
+        { text: "Sour", isCorrect: true, color: "blue", shape: "diamond" },
+        { text: "Bitter", isCorrect: false, color: "yellow", shape: "circle" },
+        { text: "Savoury", isCorrect: false, color: "green", shape: "square" }
+      ]
+    },
+    {
+      id: 2,
+      text: "Tea ______ in China.",
+      timeLimit: 20,
+      image: "https://images.unsplash.com/photo-1576092768241-dec231844f74?auto=format&fit=crop&q=80&w=800",
+      answers: [
+        { text: "grows", isCorrect: false, color: "red", shape: "triangle" },
+        { text: "is grown", isCorrect: true, color: "blue", shape: "diamond" },
+        { text: "are grown", isCorrect: false, color: "yellow", shape: "circle" },
+        { text: "growing", isCorrect: false, color: "green", shape: "square" }
+      ]
+    },
+    {
+      id: 3,
+      text: "What do we call a container for jam?",
+      timeLimit: 20,
+      answers: [
+        { text: "A can", isCorrect: false, color: "red", shape: "triangle" },
+        { text: "A carton", isCorrect: false, color: "blue", shape: "diamond" },
+        { text: "A jar", isCorrect: true, color: "yellow", shape: "circle" },
+        { text: "A packet", isCorrect: false, color: "green", shape: "square" }
+      ]
+    },
+     {
+      id: 4,
+      text: "Passive Voice: 'Bell invented the phone.' -> 'The phone ______ by Bell.'",
+      timeLimit: 30,
+      isDoublePoints: true,
+      answers: [
+        { text: "is invented", isCorrect: false, color: "red", shape: "triangle" },
+        { text: "was invented", isCorrect: true, color: "blue", shape: "diamond" },
+        { text: "has been invented", isCorrect: false, color: "yellow", shape: "circle" },
+        { text: "invented", isCorrect: false, color: "green", shape: "square" }
+      ]
+    },
+    {
+      id: 5,
+      text: "Which sentence is POLITE?",
+      timeLimit: 20,
+      answers: [
+        { text: "This soup is cold.", isCorrect: false, color: "red", shape: "triangle" },
+        { text: "I want a refund.", isCorrect: false, color: "blue", shape: "diamond" },
+        { text: "I'm afraid there is a problem.", isCorrect: true, color: "yellow", shape: "circle" },
+        { text: "Take it back.", isCorrect: false, color: "green", shape: "square" }
+      ]
+    }
+  ]
+};

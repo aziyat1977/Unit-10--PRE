@@ -46,3 +46,25 @@ export interface VocabQuestion {
   q: string;
   a: string;
 }
+
+// Kahoot Types
+export interface KahootAnswer {
+  text: string;
+  isCorrect: boolean;
+  color: 'red' | 'blue' | 'yellow' | 'green';
+  shape: 'triangle' | 'diamond' | 'circle' | 'square';
+}
+
+export interface KahootQuestion {
+  id: number;
+  text: string;
+  timeLimit: number; // seconds
+  image?: string;
+  answers: KahootAnswer[];
+  isDoublePoints?: boolean;
+}
+
+export interface KahootGame {
+  title: string;
+  questions: KahootQuestion[];
+}
