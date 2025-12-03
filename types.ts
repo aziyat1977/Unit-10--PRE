@@ -41,6 +41,7 @@ export interface KahootGame {
   id: string;
   title: string;
   description: string;
+  tags: string[]; // Added for surgical linking
   questions: KahootQuestion[];
 }
 
