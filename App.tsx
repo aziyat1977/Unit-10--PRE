@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Menu, X, Monitor, BookOpen, Sun, Moon, GraduationCap, Brain, Users, Gamepad2 } from 'lucide-react';
-import { LESSONS, QUESTIONS, GAMES, PERSONALITY_TIPS } from './constants';
+import { ChevronLeft, ChevronRight, Menu, X, Monitor, BookOpen, Sun, Moon, GraduationCap, Brain, Users } from 'lucide-react';
+import { LESSONS, QUESTIONS, PERSONALITY_TIPS } from './constants';
 import { Roulette } from './components/Roulette';
 import { TongueMap, PassiveActiveToggle, PolitenessScale, WasteChart, TaskCard, FlowChart, GrammarBox, RoleplayCard, PassiveTenseTable, PassiveExerciseList, PassiveMFP, ReferenceWordsGuide, PASSIVE_TENSE_DATA, PassiveExampleView } from './components/SlideComponents';
-import { Kahoot } from './components/Kahoot';
 import { VocabMaster } from './components/VocabMaster';
 import { PersonalityHUD } from './components/PersonalityOverlay';
 import { PersonalityType } from './types';
@@ -21,7 +20,6 @@ interface SlideData {
 
 type Theme = 'dark' | 'light';
 type UserMode = 'student' | 'teacher';
-type AppMode = 'presentation' | 'game';
 
 // --- SLIDE CONTENT DEFINITIONS (Moved outside to prevent recreation) ---
 const getSlidesForLesson = (lessonId: number): SlideData[] => {
@@ -528,11 +526,7 @@ const App: React.FC = () => {
   // New Modes State
   const [theme, setTheme] = useState<Theme>('dark');
   const [userMode, setUserMode] = useState<UserMode>('student');
-  const [appMode, setAppMode] = useState<AppMode>('presentation');
   const [personality, setPersonality] = useState<PersonalityType>('ambivert');
-  
-  // Game State
-  const [activeGameId, setActiveGameId] = useState<string | null>(null);
 
   const currentLesson = LESSONS.find(l => l.id === currentLessonId) || LESSONS[0];
 
@@ -558,26 +552,12 @@ const App: React.FC = () => {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (appMode === 'presentation') {
-        if (e.key === 'ArrowRight') nextSlide();
-        if (e.key === 'ArrowLeft') prevSlide();
-      }
+      if (e.key === 'ArrowRight') nextSlide();
+      if (e.key === 'ArrowLeft') prevSlide();
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentSlideIndex, slides.length, appMode]);
-
-  // --- GAME RENDERER ---
-  if (activeGameId) {
-    const activeGame = GAMES[currentLessonId] ? GAMES[currentLessonId].find(g => g.id === activeGameId) : null;
-    if (activeGame) {
-      return (
-        <div className={`w-screen h-screen font-sans ${theme}`}>
-          <Kahoot game={activeGame} onExit={() => setActiveGameId(null)} />
-        </div>
-      );
-    }
-  }
+  }, [currentSlideIndex, slides.length]);
 
   // --- MAIN RENDERER ---
 
@@ -588,50 +568,7 @@ const App: React.FC = () => {
         {/* Background Ambience */}
         <div className={`absolute inset-0 bg-gradient-to-br ${currentLesson.gradient} opacity-5 transition-opacity duration-1000 pointer-events-none`}></div>
 
-        {/* Presentation vs Game Mode View */}
-        {appMode === 'game' ? (
-           <div className="w-full h-full p-8 overflow-y-auto bg-gray-50 dark:bg-neutral-900 relative z-30">
-             <div className="max-w-7xl mx-auto">
-               <div className="flex justify-between items-center mb-12">
-                 <h1 className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
-                    Game Center
-                 </h1>
-                 <button onClick={() => setAppMode('presentation')} className="px-8 py-3 bg-gray-200 dark:bg-neutral-700 rounded-full font-bold text-xl">
-                    Back to Lesson
-                 </button>
-               </div>
-               
-               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                 {GAMES[currentLessonId] && GAMES[currentLessonId].length > 0 ? GAMES[currentLessonId].map((game) => (
-                    <motion.div 
-                      key={game.id}
-                      whileHover={{ y: -5, scale: 1.02 }}
-                      className="bg-white dark:bg-neutral-800 p-8 rounded-3xl shadow-lg border border-gray-200 dark:border-neutral-700 cursor-pointer group"
-                      onClick={() => setActiveGameId(game.id)}
-                    >
-                       <div className="h-48 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl mb-6 flex items-center justify-center relative overflow-hidden">
-                          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-30"></div>
-                          <Gamepad2 size={80} className="text-white drop-shadow-lg" />
-                          <div className="absolute bottom-3 right-3 bg-black/50 text-white px-3 py-1 rounded-lg font-bold">
-                            21 Qs
-                          </div>
-                       </div>
-                       <h3 className="text-3xl font-bold mb-3 group-hover:text-purple-500 transition-colors">{game.title}</h3>
-                       <p className="text-gray-500 dark:text-gray-400 text-lg mb-6">{game.description}</p>
-                       <div className="flex gap-2">
-                          <span className="bg-yellow-100 text-yellow-800 font-bold px-3 py-1 rounded text-sm">3x Double Points</span>
-                       </div>
-                    </motion.div>
-                 )) : (
-                    <div className="col-span-3 text-center p-12 opacity-50 text-2xl">
-                        No games available for this module.
-                    </div>
-                 )}
-               </div>
-             </div>
-           </div>
-        ) : (
-          /* SLIDE VIEW */
+        {/* SLIDE VIEW */}
           <div className="relative w-full h-full flex flex-col">
              
             {/* PERSONALITY OVERLAY */}
@@ -731,7 +668,6 @@ const App: React.FC = () => {
               </div>
             )}
           </div>
-        )}
 
         {/* Navigation Drawer & Settings */}
         <AnimatePresence>
@@ -756,25 +692,6 @@ const App: React.FC = () => {
                   {/* Mode Toggles */}
                   <div className="space-y-8 mb-10">
                     
-                    {/* App Mode (Lesson vs Game) */}
-                    <div className="bg-purple-50 dark:bg-purple-900/20 p-6 rounded-2xl border border-purple-100 dark:border-purple-800">
-                       <label className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-4 block">Activity Mode</label>
-                       <div className="flex gap-3">
-                          <button 
-                            onClick={() => { setAppMode('presentation'); setIsMenuOpen(false); }}
-                            className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-all ${appMode === 'presentation' ? 'bg-white dark:bg-neutral-800 text-purple-600 dark:text-purple-300 shadow-sm' : 'text-gray-500 hover:bg-white/50'}`}
-                          >
-                             <Monitor size={18} /> Lesson
-                          </button>
-                          <button 
-                            onClick={() => { setAppMode('game'); setIsMenuOpen(false); }}
-                            className={`flex-1 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-all ${appMode === 'game' ? 'bg-purple-600 text-white shadow-sm' : 'text-gray-500 hover:bg-white/50'}`}
-                          >
-                             <Gamepad2 size={18} /> Kahoot
-                          </button>
-                       </div>
-                    </div>
-
                     {/* Theme */}
                     <div className="bg-gray-100 dark:bg-neutral-800 p-6 rounded-2xl">
                        <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 block">Appearance</label>

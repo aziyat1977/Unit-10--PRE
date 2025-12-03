@@ -3,7 +3,7 @@ import React from 'react';
 export interface SlideDef {
   id: string;
   title: string;
-  type: 'cover' | 'content' | 'interactive' | 'game';
+  type: 'cover' | 'content' | 'interactive';
   component: React.FC<any>;
   lessonId: number;
 }
@@ -18,35 +18,6 @@ export interface LessonConfig {
 
 export interface QuestionBank {
   [key: number]: string[];
-}
-
-// Kahoot Mode Types
-export interface KahootAnswer {
-  text: string;
-  isCorrect: boolean;
-  color: 'red' | 'blue' | 'yellow' | 'green';
-  shape: 'triangle' | 'diamond' | 'circle' | 'square';
-}
-
-export interface KahootQuestion {
-  id: number;
-  text: string;
-  image?: string; // Optional image URL
-  answers: KahootAnswer[];
-  isDoublePoints: boolean;
-  timeLimit: number;
-}
-
-export interface KahootGame {
-  id: string;
-  title: string;
-  description: string;
-  tags: string[]; // Added for surgical linking
-  questions: KahootQuestion[];
-}
-
-export interface GameLibrary {
-  [lessonId: number]: KahootGame[];
 }
 
 // Personality Types

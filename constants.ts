@@ -1,4 +1,4 @@
-import { QuestionBank, LessonConfig, GameLibrary, KahootQuestion, KahootGame, VocabEntry, VocabQuestion } from './types';
+import { QuestionBank, LessonConfig, VocabEntry, VocabQuestion } from './types';
 
 export const LESSONS: LessonConfig[] = [
   { id: 1, title: "10.1 A Question of Taste", color: "text-orange-500", gradient: "from-orange-500 to-red-500", icon: "🍋" },
@@ -30,7 +30,7 @@ export const VOCAB_DATA: VocabEntry[] = [
   { word: "boiled", type: "adj", phonetic: "/bɔɪld/", ru: "вареный", uz: "qaynatilgan", example: "I don't like boiled vegetables." },
   { word: "bottle", type: "n", phonetic: "/ˈbɒtl/", ru: "бутылка", uz: "shisha", example: "Let's get a bottle of sparkling water." },
   { word: "can", type: "n", phonetic: "/kæn/", ru: "жестяная банка", uz: "konserva bankasi", example: "Can I have a can of lemonade?" },
-  { word: "cardboard", type: "n", phonetic: "/ˈkɑːdbɔːd/", ru: "картон", uz: "karton", example: "This container is made from cardboard." },
+  { word: "cardboard", type: "n", phonetic: "/ˈkɑːdbɔːd/", ru: "картон", uz: "картон", example: "This container is made from cardboard." },
   { word: "carton", type: "n", phonetic: "/ˈkɑːtn/", ru: "картонная коробка (пакет)", uz: "quti (qog'oz)", example: "There's a carton of juice in the fridge." },
   { word: "charge", type: "v", phonetic: "/tʃɑːdʒ/", ru: "брать плату", uz: "haq olmoq", example: "Supermarkets charge for bags." },
   { word: "chocolate", type: "n", phonetic: "/ˈtʃɒklət/", ru: "шоколад", uz: "shokolad", example: "He gave me chocolates for my birthday." },
@@ -72,65 +72,3 @@ export const VOCAB_QUESTIONS: VocabQuestion[] = [
     { q: "Someone who buys things is a **_______**.", a: "Consumer" },
     { q: "Food that is not cooked is **_______**.", a: "Raw" }
 ];
-
-export const GAMES: GameLibrary = {
-    1: [
-        {
-            id: "taste-kahoot",
-            title: "Taste Bud Challenge",
-            description: "A fast-paced quiz about flavors and textures.",
-            tags: ["Vocabulary"],
-            questions: [
-                {
-                    id: 1,
-                    text: "Which of these is usually BITTER?",
-                    answers: [
-                        { text: "Lemon", isCorrect: false, color: "red", shape: "triangle" },
-                        { text: "Dark Chocolate", isCorrect: true, color: "blue", shape: "diamond" },
-                        { text: "Cake", isCorrect: false, color: "yellow", shape: "circle" },
-                        { text: "Water", isCorrect: false, color: "green", shape: "square" }
-                    ],
-                    isDoublePoints: false,
-                    timeLimit: 20
-                },
-                {
-                    id: 2,
-                    text: "What is the '5th Taste' called?",
-                    answers: [
-                        { text: "Spicy", isCorrect: false, color: "red", shape: "triangle" },
-                        { text: "Umami", isCorrect: true, color: "blue", shape: "diamond" },
-                        { text: "Sweet", isCorrect: false, color: "yellow", shape: "circle" },
-                        { text: "Bland", isCorrect: false, color: "green", shape: "square" }
-                    ],
-                    isDoublePoints: true,
-                    timeLimit: 20
-                }
-            ]
-        }
-    ],
-    2: [
-         {
-            id: "passive-kahoot",
-            title: "Passive Voice Master",
-            description: "Can you identify the correct forms?",
-            tags: ["Grammar"],
-            questions: [
-                {
-                    id: 1,
-                    text: "Complete: 'Tea _____ grown in India.'",
-                    answers: [
-                        { text: "is", isCorrect: true, color: "red", shape: "triangle" },
-                        { text: "are", isCorrect: false, color: "blue", shape: "diamond" },
-                        { text: "were", isCorrect: false, color: "yellow", shape: "circle" },
-                        { text: "be", isCorrect: false, color: "green", shape: "square" }
-                    ],
-                    isDoublePoints: false,
-                    timeLimit: 15
-                }
-            ]
-        }
-    ],
-    3: [],
-    4: [],
-    5: []
-};
