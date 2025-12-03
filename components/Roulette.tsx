@@ -10,7 +10,14 @@ interface RouletteProps {
 export const Roulette: React.FC<RouletteProps> = ({ questions, colorClass }) => {
   const [currentQuestion, setCurrentQuestion] = useState("Ready to Spin?");
   const [isSpinning, setIsSpinning] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
 
   const spin = () => {
     if (isSpinning) return;
@@ -20,13 +27,13 @@ export const Roulette: React.FC<RouletteProps> = ({ questions, colorClass }) => 
     const maxSpins = 20;
     const speed = 70;
 
-    const interval = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       const randomIndex = Math.floor(Math.random() * questions.length);
       setCurrentQuestion(questions[randomIndex]);
       counter++;
 
       if (counter >= maxSpins) {
-        clearInterval(interval);
+        if (intervalRef.current) clearInterval(intervalRef.current);
         setIsSpinning(false);
         // Ensure one final random pick that sticks
         const finalIndex = Math.floor(Math.random() * questions.length);
@@ -36,35 +43,35 @@ export const Roulette: React.FC<RouletteProps> = ({ questions, colorClass }) => 
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      <div className={`relative overflow-hidden rounded-2xl bg-neutral-800 border-4 border-dashed border-neutral-700 p-8 text-center shadow-2xl transition-colors duration-500`}>
+    <div className="w-full max-w-4xl mx-auto">
+      <div className={`relative overflow-hidden rounded-3xl bg-neutral-800 border-4 border-dashed border-neutral-700 p-12 text-center shadow-2xl transition-colors duration-500`}>
         <motion.div
           key={currentQuestion}
           initial={{ scale: 0.9, opacity: 0.5 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="min-h-[120px] flex items-center justify-center"
+          className="min-h-[160px] flex items-center justify-center"
         >
-          <h3 className={`text-2xl md:text-3xl font-bold ${isSpinning ? 'text-neutral-400 blur-[1px]' : 'text-white'}`}>
+          <h3 className={`text-4xl md:text-5xl font-bold ${isSpinning ? 'text-neutral-400 blur-[2px]' : 'text-white'}`}>
             {currentQuestion}
           </h3>
         </motion.div>
 
-        <div className="mt-8 flex justify-center">
+        <div className="mt-12 flex justify-center">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={spin}
             disabled={isSpinning}
-            className={`flex items-center gap-2 px-8 py-4 rounded-full text-white font-bold text-lg shadow-lg ${isSpinning ? 'bg-neutral-600 cursor-not-allowed' : colorClass}`}
+            className={`flex items-center gap-3 px-10 py-5 rounded-full text-white font-bold text-2xl shadow-lg ${isSpinning ? 'bg-neutral-600 cursor-not-allowed' : colorClass}`}
           >
-             {isSpinning ? <RefreshCw className="animate-spin" /> : <Sparkles />}
+             {isSpinning ? <RefreshCw className="animate-spin w-8 h-8" /> : <Sparkles className="w-8 h-8" />}
              {isSpinning ? "Spinning..." : "SPIN"}
           </motion.button>
         </div>
         
         {/* Decor */}
-        <div className="absolute top-2 right-2 opacity-20 text-4xl">🎲</div>
-        <div className="absolute bottom-2 left-2 opacity-20 text-4xl">❓</div>
+        <div className="absolute top-4 right-4 opacity-20 text-6xl">🎲</div>
+        <div className="absolute bottom-4 left-4 opacity-20 text-6xl">❓</div>
       </div>
     </div>
   );

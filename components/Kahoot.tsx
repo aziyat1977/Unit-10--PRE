@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { KahootGame, KahootQuestion, KahootAnswer } from '../types';
 import { Play, Trophy, Clock, XCircle, CheckCircle, Users, Music } from 'lucide-react';
@@ -19,30 +19,48 @@ export const Kahoot: React.FC<KahootProps> = ({ game, onExit }) => {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [players, setPlayers] = useState<string[]>([]);
   
+  // Ref for cleanup of the feedback timeout
+  const feedbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
   const currentQ = game.questions[currentQIndex];
 
   // Lobby Simulation
   useEffect(() => {
     if (phase === 'lobby') {
       const interval = setInterval(() => {
-        if (players.length < 5) {
-          const names = ["CoolCat", "Foodie99", "ChefMaster", "VibeCoder", "Student01"];
-          setPlayers(prev => [...prev, names[prev.length]]);
-        }
+        setPlayers(prev => {
+          if (prev.length < 5) {
+            const names = ["CoolCat", "Foodie99", "ChefMaster", "VibeCoder", "Student01"];
+            return [...prev, names[prev.length]];
+          }
+          return prev;
+        });
       }, 1500);
       return () => clearInterval(interval);
     }
-  }, [phase, players]);
+  }, [phase]);
 
   // Timer Logic
   useEffect(() => {
-    if (phase === 'question' && timeLeft > 0) {
-      const timer = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (phase === 'question' && timeLeft === 0) {
-      handleAnswer(-1); // Time out
+    let timer: ReturnType<typeof setTimeout>;
+    if (phase === 'question') {
+        if (timeLeft > 0) {
+            timer = setTimeout(() => setTimeLeft(prev => prev - 1), 1000);
+        } else if (timeLeft === 0 && selectedAnswer === null) {
+            handleAnswer(-1); // Time out, only if not already answered
+        }
     }
-  }, [phase, timeLeft]);
+    return () => clearTimeout(timer);
+  }, [phase, timeLeft, selectedAnswer]);
+
+  // Cleanup feedback timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (feedbackTimeoutRef.current) {
+        clearTimeout(feedbackTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const startGame = () => {
     setPhase('question');
@@ -50,6 +68,9 @@ export const Kahoot: React.FC<KahootProps> = ({ game, onExit }) => {
   };
 
   const handleAnswer = (idx: number) => {
+    // Prevent multiple answers
+    if (selectedAnswer !== null) return;
+    
     setSelectedAnswer(idx);
     const isCorrect = idx !== -1 && currentQ.answers[idx].isCorrect;
     
@@ -63,7 +84,7 @@ export const Kahoot: React.FC<KahootProps> = ({ game, onExit }) => {
       setStreak(0);
     }
     
-    setTimeout(() => setPhase('feedback'), 1000);
+    feedbackTimeoutRef.current = setTimeout(() => setPhase('feedback'), 1000);
   };
 
   const nextQuestion = () => {
@@ -86,32 +107,32 @@ export const Kahoot: React.FC<KahootProps> = ({ game, onExit }) => {
         
         <motion.div 
           initial={{ y: -50, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-          className="bg-white text-black px-12 py-6 rounded-lg shadow-2xl mb-12 text-center"
+          className="bg-white text-black px-16 py-8 rounded-2xl shadow-2xl mb-16 text-center"
         >
-          <div className="text-xl font-bold text-gray-500 uppercase">Game PIN:</div>
-          <div className="text-6xl font-black tracking-widest">395 210</div>
+          <div className="text-2xl font-bold text-gray-500 uppercase">Game PIN:</div>
+          <div className="text-8xl font-black tracking-widest">395 210</div>
         </motion.div>
 
-        <div className="flex gap-4 mb-12 flex-wrap justify-center max-w-4xl">
+        <div className="flex gap-6 mb-16 flex-wrap justify-center max-w-5xl">
           {players.map((p, i) => (
             <motion.div 
               key={p} 
               initial={{ scale: 0 }} animate={{ scale: 1 }}
-              className="bg-black/30 px-6 py-3 rounded-full text-xl font-bold animate-bounce"
+              className="bg-black/30 px-8 py-4 rounded-full text-2xl font-bold animate-bounce"
               style={{ animationDelay: `${i * 0.2}s` }}
             >
               {p}
             </motion.div>
           ))}
-          <div className="px-6 py-3 text-white/50 animate-pulse">Waiting for players...</div>
+          <div className="px-8 py-4 text-white/50 animate-pulse text-2xl">Waiting for players...</div>
         </div>
 
-        <div className="flex flex-col items-center gap-4 z-10">
-          <h1 className="text-4xl font-bold mb-4">{game.title}</h1>
-          <button onClick={startGame} className="bg-white text-black px-12 py-4 rounded-lg font-bold text-2xl hover:scale-105 transition-transform shadow-xl">
+        <div className="flex flex-col items-center gap-6 z-10">
+          <h1 className="text-6xl font-bold mb-6">{game.title}</h1>
+          <button onClick={startGame} className="bg-white text-black px-16 py-6 rounded-2xl font-bold text-4xl hover:scale-105 transition-transform shadow-xl">
              Start Game
           </button>
-          <button onClick={onExit} className="text-white/60 hover:text-white underline">Exit</button>
+          <button onClick={onExit} className="text-white/60 hover:text-white underline text-xl">Exit</button>
         </div>
       </div>
     );
@@ -120,20 +141,20 @@ export const Kahoot: React.FC<KahootProps> = ({ game, onExit }) => {
   if (phase === 'podium') {
     return (
       <div className="w-full h-full bg-[#46178f] flex flex-col items-center justify-center text-white">
-        <h1 className="text-6xl font-black mb-12">Podium</h1>
-        <div className="flex items-end gap-4 mb-12">
-           <motion.div initial={{ height: 0 }} animate={{ height: 200 }} className="w-32 bg-blue-500 rounded-t-lg flex items-end justify-center pb-4 text-2xl font-bold shadow-lg">2</motion.div>
-           <motion.div initial={{ height: 0 }} animate={{ height: 300 }} className="w-32 bg-yellow-400 rounded-t-lg flex items-end justify-center pb-4 text-4xl font-bold shadow-xl relative z-10">
+        <h1 className="text-8xl font-black mb-16">Podium</h1>
+        <div className="flex items-end gap-6 mb-16">
+           <motion.div initial={{ height: 0 }} animate={{ height: 300 }} className="w-48 bg-blue-500 rounded-t-2xl flex items-end justify-center pb-6 text-4xl font-bold shadow-lg">2</motion.div>
+           <motion.div initial={{ height: 0 }} animate={{ height: 450 }} className="w-48 bg-yellow-400 rounded-t-2xl flex items-end justify-center pb-6 text-6xl font-bold shadow-xl relative z-10">
               1
-              <div className="absolute -top-16 text-6xl">👑</div>
+              <div className="absolute -top-24 text-8xl">👑</div>
            </motion.div>
-           <motion.div initial={{ height: 0 }} animate={{ height: 150 }} className="w-32 bg-green-500 rounded-t-lg flex items-end justify-center pb-4 text-2xl font-bold shadow-lg">3</motion.div>
+           <motion.div initial={{ height: 0 }} animate={{ height: 200 }} className="w-48 bg-green-500 rounded-t-2xl flex items-end justify-center pb-6 text-4xl font-bold shadow-lg">3</motion.div>
         </div>
-        <div className="bg-white/10 px-8 py-4 rounded-xl text-center">
-           <div className="text-sm uppercase opacity-70">Your Score</div>
-           <div className="text-4xl font-bold">{score}</div>
+        <div className="bg-white/10 px-12 py-6 rounded-2xl text-center">
+           <div className="text-xl uppercase opacity-70">Your Score</div>
+           <div className="text-6xl font-bold">{score}</div>
         </div>
-        <button onClick={onExit} className="mt-12 bg-gray-900 px-8 py-3 rounded-lg font-bold hover:bg-gray-800">Back to Menu</button>
+        <button onClick={onExit} className="mt-16 bg-gray-900 px-12 py-4 rounded-xl font-bold text-2xl hover:bg-gray-800">Back to Menu</button>
       </div>
     );
   }
@@ -142,19 +163,19 @@ export const Kahoot: React.FC<KahootProps> = ({ game, onExit }) => {
     <div className="w-full h-full bg-gray-100 dark:bg-neutral-900 flex flex-col relative overflow-hidden">
       
       {/* Top Bar */}
-      <div className="bg-white dark:bg-neutral-800 p-4 flex justify-between items-center shadow-md z-10">
-        <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold">{currentQIndex + 1}/{game.questions.length}</div>
-          {currentQ.isDoublePoints && <div className="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">x2 POINTS</div>}
+      <div className="bg-white dark:bg-neutral-800 p-6 flex justify-between items-center shadow-md z-10">
+        <div className="flex items-center gap-6">
+          <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-2xl">{currentQIndex + 1}/{game.questions.length}</div>
+          {currentQ.isDoublePoints && <div className="bg-pink-500 text-white px-4 py-2 rounded-full text-lg font-bold animate-pulse">x2 POINTS</div>}
         </div>
-        <div className="text-3xl font-black text-gray-800 dark:text-white">{score}</div>
+        <div className="text-5xl font-black text-gray-800 dark:text-white">{score}</div>
       </div>
 
       {/* Main Area */}
       <div className="flex-1 flex flex-col relative">
         {/* Timer Bar */}
         <motion.div 
-           className="h-2 bg-purple-500" 
+           className="h-3 bg-purple-500" 
            initial={{ width: '100%' }} 
            animate={{ width: phase === 'question' ? '0%' : '0%' }} 
            transition={{ duration: currentQ.timeLimit, ease: 'linear' }}
@@ -164,20 +185,20 @@ export const Kahoot: React.FC<KahootProps> = ({ game, onExit }) => {
         <div className="flex-1 flex flex-col items-center justify-center p-8 bg-purple-100/50 dark:bg-black/20">
            {phase === 'feedback' ? (
              <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }} className="text-center">
-                {selectedAnswer !== -1 && currentQ.answers[selectedAnswer!].isCorrect ? (
+                {selectedAnswer !== -1 && selectedAnswer !== null && currentQ.answers[selectedAnswer].isCorrect ? (
                   <div className="text-green-500 flex flex-col items-center">
-                    <CheckCircle size={100} />
-                    <h2 className="text-4xl font-bold mt-4">Correct!</h2>
-                    <p className="text-xl mt-2">Streak: {streak} 🔥</p>
+                    <CheckCircle size={150} />
+                    <h2 className="text-6xl font-bold mt-8">Correct!</h2>
+                    <p className="text-3xl mt-4">Streak: {streak} 🔥</p>
                   </div>
                 ) : (
                   <div className="text-red-500 flex flex-col items-center">
-                    <XCircle size={100} />
-                    <h2 className="text-4xl font-bold mt-4">Incorrect</h2>
-                    <p className="text-gray-500 mt-2">Better luck next time!</p>
+                    <XCircle size={150} />
+                    <h2 className="text-6xl font-bold mt-8">Incorrect</h2>
+                    <p className="text-gray-500 mt-4 text-2xl">Better luck next time!</p>
                   </div>
                 )}
-                <button onClick={nextQuestion} className="mt-8 bg-blue-600 text-white px-8 py-3 rounded-lg font-bold shadow-lg hover:bg-blue-500 transition-colors">
+                <button onClick={nextQuestion} className="mt-12 bg-blue-600 text-white px-12 py-4 rounded-xl font-bold text-2xl shadow-lg hover:bg-blue-500 transition-colors">
                   Next Question
                 </button>
              </motion.div>
@@ -186,12 +207,12 @@ export const Kahoot: React.FC<KahootProps> = ({ game, onExit }) => {
                key={currentQ.id}
                initial={{ opacity: 0, y: 20 }}
                animate={{ opacity: 1, y: 0 }}
-               className="bg-white dark:bg-neutral-800 p-8 rounded-xl shadow-2xl max-w-3xl text-center"
+               className="bg-white dark:bg-neutral-800 p-12 rounded-3xl shadow-2xl max-w-5xl text-center w-full"
              >
-               <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-8">{currentQ.text}</h2>
-               {currentQ.image && <img src={currentQ.image} alt="Question" className="h-48 mx-auto mb-8 rounded-lg object-cover" />}
+               <h2 className="text-5xl font-bold text-gray-800 dark:text-white mb-12">{currentQ.text}</h2>
+               {currentQ.image && <img src={currentQ.image} alt="Question" className="h-80 md:h-96 mx-auto mb-12 rounded-xl object-cover shadow-md" />}
                
-               <div className="w-24 h-24 rounded-full border-4 border-purple-500 flex items-center justify-center text-3xl font-bold text-purple-600 dark:text-purple-400 mx-auto">
+               <div className="w-32 h-32 rounded-full border-8 border-purple-500 flex items-center justify-center text-5xl font-bold text-purple-600 dark:text-purple-400 mx-auto">
                  {timeLeft}
                </div>
              </motion.div>
@@ -199,7 +220,7 @@ export const Kahoot: React.FC<KahootProps> = ({ game, onExit }) => {
         </div>
 
         {/* Answers Grid */}
-        <div className="h-1/3 min-h-[200px] grid grid-cols-2 gap-2 p-2">
+        <div className="h-[40vh] grid grid-cols-2 gap-4 p-4">
             {currentQ.answers.map((ans, idx) => {
               const bgColors = { red: 'bg-red-500', blue: 'bg-blue-500', yellow: 'bg-yellow-500', green: 'bg-green-500' };
               const shapes = { triangle: '▲', diamond: '◆', circle: '●', square: '■' };
@@ -212,10 +233,10 @@ export const Kahoot: React.FC<KahootProps> = ({ game, onExit }) => {
                   key={idx}
                   disabled={phase !== 'question'}
                   onClick={() => handleAnswer(idx)}
-                  className={`${bgColors[ans.color]} ${isDimmed ? 'opacity-20' : 'opacity-100'} transition-opacity rounded-lg flex items-center p-6 text-white shadow-lg hover:brightness-110 active:scale-95`}
+                  className={`${bgColors[ans.color]} ${isDimmed ? 'opacity-20' : 'opacity-100'} transition-opacity rounded-2xl flex items-center p-8 text-white shadow-lg hover:brightness-110 active:scale-95`}
                 >
-                   <div className="text-4xl mr-4 opacity-50">{shapes[ans.shape]}</div>
-                   <div className="text-xl md:text-2xl font-bold text-left">{ans.text}</div>
+                   <div className="text-6xl mr-6 opacity-50">{shapes[ans.shape]}</div>
+                   <div className="text-3xl md:text-4xl font-bold text-left">{ans.text}</div>
                 </button>
               );
             })}
