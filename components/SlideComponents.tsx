@@ -617,4 +617,177 @@ export const ReferenceWordsGuide = () => {
                   uz: "Men yashil ko'ylakni xohlamayman. Men qizilini xohlayman."
               },
               {
-                  ex: "Small cakes are better than big <span class='bg-teal-100 dark:bg-teal-900 text-teal-800 dark:text-teal-200 px-
+                  ex: "Small cakes are better than big <span class='bg-teal-100 dark:bg-teal-900 text-teal-800 dark:text-teal-200 px-1 rounded font-bold'>ones</span>.",
+                  ru: "Маленькие пирожные лучше больших.",
+                  uz: "Kichik tortlar kattalaridan yaxshiroq."
+              }
+          ]
+      }
+  ];
+
+  return (
+    <div className="w-full max-w-5xl mx-auto space-y-8 pb-20">
+        <div className="flex justify-end gap-4 mb-4 sticky top-0 bg-white/80 dark:bg-black/80 p-4 backdrop-blur z-10 rounded-xl">
+             <button onClick={() => setShowRU(!showRU)} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold border transition-colors ${showRU ? 'bg-blue-100 text-blue-700 border-blue-300' : 'bg-white dark:bg-neutral-800 text-gray-500 border-gray-300'}`}>
+                {showRU ? <Eye size={16}/> : <EyeOff size={16}/>} RU
+            </button>
+            <button onClick={() => setShowUZ(!showUZ)} className={`flex items-center gap-2 px-4 py-2 rounded-lg font-bold border transition-colors ${showUZ ? 'bg-green-100 text-green-700 border-green-300' : 'bg-white dark:bg-neutral-800 text-gray-500 border-gray-300'}`}>
+                {showUZ ? <Eye size={16}/> : <EyeOff size={16}/>} UZ
+            </button>
+        </div>
+
+        {data.map((section, idx) => (
+            <motion.div 
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.2 }}
+                className="bg-white dark:bg-neutral-800 rounded-2xl shadow-lg border border-gray-100 dark:border-neutral-700 overflow-hidden"
+            >
+                <div className="bg-teal-50 dark:bg-teal-900/20 p-4 border-b border-teal-100 dark:border-teal-800/30">
+                    <h3 className="text-xl font-bold text-teal-800 dark:text-teal-200">{section.category}</h3>
+                    <div className="flex gap-2 mt-2">
+                        {section.words.map(w => (
+                            <span key={w} className="bg-white dark:bg-neutral-800 px-2 py-1 rounded text-xs font-mono border border-teal-200 dark:border-teal-800">{w}</span>
+                        ))}
+                    </div>
+                </div>
+                <div className="p-4 space-y-4">
+                    {section.items.map((item, i) => (
+                        <div key={i} className="p-3 bg-gray-50 dark:bg-neutral-900 rounded-xl">
+                             <div className="text-lg md:text-xl text-gray-800 dark:text-gray-100 mb-2" dangerouslySetInnerHTML={{ __html: item.ex }} />
+                             <AnimatePresence>
+                                 {showRU && (
+                                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="text-blue-600 dark:text-blue-400 text-sm overflow-hidden border-t border-gray-200 dark:border-neutral-700 mt-2 pt-1">
+                                         {item.ru}
+                                     </motion.div>
+                                 )}
+                                 {showUZ && (
+                                     <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="text-green-600 dark:text-green-400 text-sm overflow-hidden border-t border-gray-200 dark:border-neutral-700 mt-1 pt-1">
+                                         {item.uz}
+                                     </motion.div>
+                                 )}
+                             </AnimatePresence>
+                        </div>
+                    ))}
+                </div>
+            </motion.div>
+        ))}
+    </div>
+  );
+};
+
+export const PassiveExampleView = ({ tense, example }: { tense: string, example: any }) => {
+    return (
+        <div className="h-full flex flex-col items-center justify-center p-4">
+            <h3 className="text-xl font-bold uppercase tracking-widest text-purple-500 mb-8">{tense}</h3>
+            
+            <div className="w-full max-w-4xl grid gap-8">
+                {/* Active */}
+                <motion.div 
+                    initial={{ x: -50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    className="bg-white dark:bg-neutral-800 p-8 rounded-2xl shadow-xl border-l-8 border-blue-500 relative"
+                >
+                    <div className="absolute top-4 right-4 text-xs font-bold bg-blue-100 text-blue-600 px-2 py-1 rounded uppercase">Active</div>
+                    <div className="text-3xl md:text-5xl font-bold text-gray-800 dark:text-white" dangerouslySetInnerHTML={{ __html: example.active }}></div>
+                </motion.div>
+
+                <div className="flex justify-center">
+                    <ArrowRight className="text-gray-400 rotate-90 md:rotate-0" size={48} />
+                </div>
+
+                {/* Passive */}
+                 <motion.div 
+                    initial={{ x: 50, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-white dark:bg-neutral-800 p-8 rounded-2xl shadow-xl border-l-8 border-purple-500 relative"
+                >
+                    <div className="absolute top-4 right-4 text-xs font-bold bg-purple-100 text-purple-600 px-2 py-1 rounded uppercase">Passive</div>
+                    <div className="text-3xl md:text-5xl font-bold text-gray-800 dark:text-white" dangerouslySetInnerHTML={{ __html: example.passive }}></div>
+                </motion.div>
+
+                 <div className="grid grid-cols-2 gap-4 mt-8">
+                    <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl text-blue-800 dark:text-blue-200 text-center">
+                        <span className="block text-xs uppercase opacity-50 mb-1">Russian</span>
+                        {example.ru}
+                    </div>
+                    <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-xl text-green-800 dark:text-green-200 text-center">
+                        <span className="block text-xs uppercase opacity-50 mb-1">Uzbek</span>
+                        {example.uz}
+                    </div>
+                 </div>
+            </div>
+        </div>
+    );
+};
+
+export const PassiveTenseTable = () => {
+    return (
+        <div className="w-full max-w-5xl mx-auto bg-white dark:bg-neutral-800 rounded-xl shadow-2xl overflow-hidden text-sm md:text-base">
+            <div className="overflow-x-auto">
+                <table className="w-full">
+                    <thead className="bg-purple-600 text-white">
+                        <tr>
+                            <th className="p-4 text-left">Tense</th>
+                            <th className="p-4 text-left">Active</th>
+                            <th className="p-4 text-left">Passive (Be + V3)</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200 dark:divide-neutral-700">
+                        {PASSIVE_TENSE_DATA.map((row, i) => (
+                            <tr key={i} className="hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors">
+                                <td className="p-4 font-bold text-purple-600 dark:text-purple-400">{row.label}</td>
+                                <td className="p-4 text-gray-700 dark:text-gray-300">{row.examples[0].active}</td>
+                                <td className="p-4 font-medium text-gray-900 dark:text-white" dangerouslySetInnerHTML={{ __html: row.examples[0].passive }}></td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+};
+
+export const PassiveExerciseList = () => {
+    const exercises = [
+        { q: "Someone stole my bike.", a: "My bike was stolen." },
+        { q: "They clean the office every day.", a: "The office is cleaned every day." },
+        { q: "They are building a new bridge.", a: "A new bridge is being built." },
+        { q: "Someone has eaten the cake.", a: "The cake has been eaten." },
+        { q: "We will finish the project soon.", a: "The project will be finished soon." }
+    ];
+
+    const [revealed, setRevealed] = useState<number[]>([]);
+
+    const toggle = (i: number) => {
+        if (revealed.includes(i)) {
+            setRevealed(revealed.filter(idx => idx !== i));
+        } else {
+            setRevealed([...revealed, i]);
+        }
+    };
+
+    return (
+        <div className="w-full max-w-4xl mx-auto space-y-4">
+            {exercises.map((ex, i) => (
+                <div key={i} className="flex flex-col md:flex-row gap-4 items-stretch">
+                    <div className="flex-1 bg-white dark:bg-neutral-800 p-6 rounded-xl shadow-md border-l-4 border-blue-500 flex items-center">
+                        <span className="font-bold mr-4 text-gray-400">{i + 1}.</span>
+                        <span className="text-xl text-gray-800 dark:text-white">{ex.q}</span>
+                    </div>
+                    <button 
+                        onClick={() => toggle(i)}
+                        className="md:w-16 bg-purple-100 dark:bg-neutral-700 hover:bg-purple-200 dark:hover:bg-neutral-600 rounded-xl flex items-center justify-center transition-colors"
+                    >
+                        {revealed.includes(i) ? <EyeOff className="text-purple-600 dark:text-gray-300" /> : <Eye className="text-purple-600 dark:text-gray-300" />}
+                    </button>
+                    <div className={`flex-1 bg-purple-50 dark:bg-purple-900/30 p-6 rounded-xl border-l-4 border-purple-500 flex items-center transition-all duration-300 ${revealed.includes(i) ? 'opacity-100' : 'opacity-0'}`}>
+                        <span className="text-xl font-bold text-purple-900 dark:text-purple-100">{ex.a}</span>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+};
